@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <h4>Track Fish</h4>
+        <form action="/save" method="POST">
+            <p>Select the ones you already caught and then click Save!</p>
+                <button class="btn btn-large btn-success">Save</button>
+                    <div class="container" id="uncaught-fish-container">
+                        <h4>Uncaught Fish</h4>
+                            <div id="uncaught-fish-div">
+                                <div class="row" id="uncaught-fish-grid">
+                                    {% if uncaught_fish %}
+                                        {% for f in uncaught_fish %}
+                                            <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light" style="max-width: 300px" data-id="fish-{{f.fish.id}}">
+                                                <input type="checkbox" class="custom-control-input" name="uncaughtfishcheckbox" id="fish-{{f.fish.id}}" value="{{f.fish.id}}">
+                                                <label class="custom-control-label" for="fish-{{f.fish.id}}">
+                                                    <div class="card-header">{{f.fish.name}}</div>
+                                                    <img src="{{f.fish.icon_url}}" class="card-img-top img-fluid">
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    {% else %}
+                                        {% for f in all_fish %}
+                                            <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light" style="max-width: 300px" data-id="fish-{{f.id}}">
+                                                <input type="checkbox" class="custom-control-input" name="uncaughtfishcheckbox" id="fish-{{f.id}}" value="{{f.id}}">
+                                                <label class="custom-control-label" for="fish-{{f.id}}">
+                                                    <div class="card-header">{{f.name}}</div>
+                                                    <img src="{{f.icon_url}}" class="card-img-top img-fluid">
+                                                </label>
+                                            </div>
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                            </div>
+                    </div>
+                    <div class="container" id="caught-fish-container">
+                            <h4>Caught Fish</h4>
+                                    <div id="caught-fish-div">
+                                        <div class="row" id="caught-fish-grid">
+                                            {% if caught_fish %}
+                                                {% for f in caught_fish %}
+                                                    <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light" style="max-width: 300px" data-id="fish-{{f.fish.id}}">
+                                                        <input type="checkbox" class="custom-control-input" name="caughtfishcheckbox" id="fish-{{f.fish.id}}" value="{{f.fish.id}}">
+                                                        <label class="custom-control-label" for="fish-{{f.fish.id}}">
+                                                            <div class="card-header">{{f.fish.name}}</div>
+                                                            <img src="{{f.fish.icon_url}}" class="card-img-top img-fluid">
+                                                        </label>
+                                                    </div>
+                                                {% endfor %}
+                                            {% else %}
+                                            <p>You haven't caught any yet!</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                    </div>
+        </form>
+    </div>
+  
+    <script src="static/app.js"></script>
+{% endblock %}

@@ -1,11 +1,13 @@
-from flask import Flask, render_template, request, flash, redirect, session, g
+from flask import Flask, render_template, request, flash, jsonify, redirect, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
+import requests
 
-from models import db, connect_db, User, Fish
+from models import db, connect_db, User, Fish, Caught, Uncaught
 from forms import UserAddForm, LoginForm
 
 CURR_USER_KEY = "curr_user"
+API_BASE_URL = "https://acnhapi.com/v1a"
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///acnhcreatures'
@@ -20,6 +22,32 @@ db.create_all()
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
+
+########## Load Fish Database ##########
+def load_database():
+    all_fish = get_all_fish()
+    for fish in all_fish:
+        name = fish['name']
+        icon = fish['icon_url']
+        new_fish = Fish(name=name, icon_url=icon)
+        db.session.add(new_fish)
+        db.session.commit()
+    # response_json = jsonify(fish=all_fish)
+    # return (response_json, 201)
+
+########## API Calls ##########
+def get_all_fish():
+    """Make API call to load all fish to database.
+    Return JSON {}"""
+    response = requests.get(f'{API_BASE_URL}/fish')
+    data = response.json()
+    all_fish = []
+    for d in data:
+        name = d['name']['name-USen']
+        icon = d['icon_uri']
+        fish = {'name': name, 'icon_url': icon}
+        all_fish.append(fish)
+    return all_fish
 
 ##############################################################################
 # User register/login/logout
@@ -125,3 +153,63 @@ def homepage():
 
     else:
         return render_template('home-anon.html')
+
+##############################################################################
+# Track Creatures and Save routes:
+
+@app.route('/track')
+def show_index():
+    """Show tracking page."""
+    
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
+    #check if global user has previously saved caught/uncaught fish
+    uncaught_fish = Uncaught.query.filter_by(user_id=g.user.id).all()
+    caught_fish = Caught.query.filter_by(user_id=g.user.id).all()
+
+    #if user already has saved fish, show last saved uncaught/caught sections
+    elif len(caught_fish) != 0:
+        return render_template('users/index-2.html', uncaught_fish=uncaught_fish, caught_fish=caught_fish)
+
+    #if user's first time logging in or have no saved caught fish, then show all fish and save all uncaught fish to user's id in Uncaught table
+    else:
+        all_fish = Fish.query.all()
+        for f in all_fish:
+            uncaught_fish = Uncaught(user_id=g.user.id, fish_id=f.id)
+            db.session.add(uncaught_fish)
+            db.session.commit()
+        return render_template('users/index-2.html', all_fish=all_fish)
+
+@app.route('/save', methods=["POST"])
+def save_fish():
+    """Save uncaught/caught sections."""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    #if fish are checked in the uncaught section, these are considered "caught"
+    caught_fish = request.form.getlist('uncaughtfishcheckbox')
+
+    #for each caught fish, save to Caught table with user's id, and delete fish from Uncaught table
+    for f in caught_fish:
+        caught_fish = Caught(user_id=g.user.id, fish_id=f)
+        db.session.add(caught_fish)
+        db.session.commit()
+        update_uncaught = Uncaught.query.filter(Uncaught.user_id==g.user.id, Uncaught.fish_id==f).delete()
+        db.session.commit()
+    
+    #if fish are checked in the caught section, these are considered "uncaught"
+    uncaught_fish = request.form.getlist('caughtfishcheckbox')
+
+    #for each uncaught fish, save to Uncaught table with user's id, and delete fish from Caught table
+    for f in uncaught_fish:
+        uncaught_fish = Uncaught(user_id=g.user.id, fish_id=f)
+        db.session.add(uncaught_fish)
+        db.session.commit()
+        update_caught = Caught.query.filter(Caught.user_id==g.user.id, Caught.fish_id==f).delete()
+        db.session.commit()
+
+    return redirect('/track')
