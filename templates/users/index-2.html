@@ -1,16 +1,19 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="container">
-        <h4>Track Fish</h4>
+        <h3>Track Fish</h3>
         <form action="/save" method="POST">
-            <p>Select the ones you already caught and then click Save!</p>
-                <button class="btn btn-large btn-success">Save</button>
+            <p><b>Instructions:</b></p>
+            <p>If you have caught fish in <em>ACNH</em>, select them and click Save. They will appear under the Caught section (scroll below).
+            If you made a mistake, you can select the fish from the Caught section and then click Save. The selected fish will re-appear under the Uncaught section.</p>
+            <hr>    
+            <button class="btn btn-large btn-success">Save</button>
                     <div class="container" id="uncaught-fish-container">
                         <h4>Uncaught Fish</h4>
                             <div id="uncaught-fish-div">
                                 <div class="row" id="uncaught-fish-grid">
                                     {% if uncaught_fish %}
-                                        {% for f in uncaught_fish %}
+                                        {% for f in uncaught_fish|sort(attribute="fish_id") %}
                                             <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light" style="max-width: 300px" data-id="fish-{{f.fish.id}}">
                                                 <input type="checkbox" class="custom-control-input" name="uncaughtfishcheckbox" id="fish-{{f.fish.id}}" value="{{f.fish.id}}">
                                                 <label class="custom-control-label" for="fish-{{f.fish.id}}">
@@ -20,7 +23,7 @@
                                             </div>
                                         {% endfor %}
                                     {% else %}
-                                        {% for f in all_fish %}
+                                        {% for f in all_fish|sort(attribute="id") %}
                                             <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light" style="max-width: 300px" data-id="fish-{{f.id}}">
                                                 <input type="checkbox" class="custom-control-input" name="uncaughtfishcheckbox" id="fish-{{f.id}}" value="{{f.id}}">
                                                 <label class="custom-control-label" for="fish-{{f.id}}">
@@ -38,7 +41,7 @@
                                     <div id="caught-fish-div">
                                         <div class="row" id="caught-fish-grid">
                                             {% if caught_fish %}
-                                                {% for f in caught_fish %}
+                                                {% for f in caught_fish|sort(attribute="fish_id") %}
                                                     <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light" style="max-width: 300px" data-id="fish-{{f.fish.id}}">
                                                         <input type="checkbox" class="custom-control-input" name="caughtfishcheckbox" id="fish-{{f.fish.id}}" value="{{f.fish.id}}">
                                                         <label class="custom-control-label" for="fish-{{f.fish.id}}">

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, flash, jsonify, redirect, session, g
+from flask import Flask, render_template, request, flash, jsonify, redirect, session, g, abort
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 import requests
@@ -23,6 +23,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
 debug = DebugToolbarExtension(app)
 
+##############################################################################
 ########## Load Fish Database ##########
 def load_database():
     all_fish = get_all_fish()
@@ -32,8 +33,6 @@ def load_database():
         new_fish = Fish(name=name, icon_url=icon)
         db.session.add(new_fish)
         db.session.commit()
-    # response_json = jsonify(fish=all_fish)
-    # return (response_json, 201)
 
 ########## API Calls ##########
 def get_all_fish():
@@ -47,7 +46,8 @@ def get_all_fish():
         icon = d['icon_uri']
         fish = {'name': name, 'icon_url': icon}
         all_fish.append(fish)
-    return all_fish
+    response_json = jsonify(fish=all_fish)
+    return (response_json, 201)
 
 ##############################################################################
 # User register/login/logout
@@ -154,24 +154,43 @@ def homepage():
     else:
         return render_template('home-anon.html')
 
+#error handlers for 404 and 500 below copied 
+# from Julian Nash's Youtube tutorial video: Flask error handling - Python on the web - Learning Flask Ep. 18
+@app.errorhandler(404)
+def not_found(e):
+    return render_template('errors/404.html')
+
+@app.errorhandler(500)
+def server_error(e):
+    app.logger.error(f"Server error: {e}, route: {request.url}")
+    return render_template('errors/500.html')
+
+@app.errorhandler(403)
+def forbidden(e):
+    return render_template('errors/403.html')
+
+@app.errorhandler(405)
+def method_not_allowed(e):
+    return render_template('errors/405.html')
+
 ##############################################################################
 # Track Creatures and Save routes:
 
 @app.route('/track')
 def show_index():
     """Show tracking page."""
-    
+
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
 
     #check if global user has previously saved caught/uncaught fish
-    uncaught_fish = Uncaught.query.filter_by(user_id=g.user.id).all()
-    caught_fish = Caught.query.filter_by(user_id=g.user.id).all()
+    saved_uncaught_fish = Uncaught.query.filter_by(user_id=g.user.id).all()
+    saved_caught_fish = Caught.query.filter_by(user_id=g.user.id).all()
 
     #if user already has saved fish, show last saved uncaught/caught sections
-    elif len(caught_fish) != 0:
-        return render_template('users/index-2.html', uncaught_fish=uncaught_fish, caught_fish=caught_fish)
+    if len(saved_caught_fish) != 0:
+        return render_template('users/index-2.html', uncaught_fish=saved_uncaught_fish, caught_fish=saved_caught_fish)
 
     #if user's first time logging in or have no saved caught fish, then show all fish and save all uncaught fish to user's id in Uncaught table
     else:

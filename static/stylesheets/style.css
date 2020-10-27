@@ -1,0 +1,88 @@
+/* ====================== General */
+
+body {
+  background-color: #e3eafa;
+}
+
+body.error-404 {
+  background-color: 'blueviolet';
+}
+
+.btn {
+  border-radius: 50px;
+  margin-bottom: 12px;
+}
+
+.btn:hover {
+  cursor: pointer;
+}
+
+/* ========================== Signup/Login */
+
+#user_form input.form-control {
+  font-size: 18px;
+  font-weight: bold;
+  padding: 12px;
+  margin-bottom: 20px;
+}
+
+/* ======================= Nav */
+
+.navbar {
+  background-color: #f0f1ff;
+  height: 46px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 9999;
+}
+
+.navbar a {
+  color: #888bb3;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.navbar a:hover {
+  color: #626ad1;
+}
+
+#navbar-brand {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.nav > li > a > img {
+  width: 32px;
+  border-radius: 32px;
+}
+
+ul.nav.navbar-nav {
+  align-items: center;
+}
+
+ul.nav.navbar-nav li {
+  margin: 0 0.5rem;
+  display: flex;
+}
+
+/* ================================ 404 page */
+
+.message-404 {
+  color: white;
+  margin-top: 2em;
+  text-align: center;
+}
+
+.message-404 a {
+  color: white;
+}
+
+.message-404 > h4.display-4 {
+  font-size: 2.5em;
+}
+
+.message-404 .form-inline input {
+  flex: 1;
+}
