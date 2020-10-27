@@ -66,23 +66,3 @@ ul.nav.navbar-nav li {
   margin: 0 0.5rem;
   display: flex;
 }
-
-/* ================================ 404 page */
-
-.message-404 {
-  color: white;
-  margin-top: 2em;
-  text-align: center;
-}
-
-.message-404 a {
-  color: white;
-}
-
-.message-404 > h4.display-4 {
-  font-size: 2.5em;
-}
-
-.message-404 .form-inline input {
-  flex: 1;
-}
