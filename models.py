@@ -29,10 +29,8 @@ class User(db.Model):
                 nullable=False)
     profile_img = db.Column(db.Text,
                 default="/static/images/default-pic.png")
-    
-    caught_fish = db.relationship("Caught", backref="user")
 
-    uncaught_fish = db.relationship("Uncaught", backref="user")
+    fish = db.relationship('Fish', secondary='users_fish', backref='user')
 
     def __repr__(self):
         return f"<User {self.username} {self.email} >"
@@ -91,41 +89,23 @@ class Fish(db.Model):
                 nullable=False,
                 unique=True)
     
-    user_caught = db.relationship("Caught", backref="fish")
-
-    user_uncaught = db.relationship("Uncaught", backref="fish")
+    user_fish = db.relationship('User_Fish', backref='fish')
 
     def __repr__(self):
         return f"<Fish {self.name} {self.icon_url} >"
 
-class Uncaught(db.Model):
-    """Uncaught Fish."""
+class User_Fish(db.Model):
+    """User_Fish relationship."""
 
-    __tablename__ = "uncaught_fish"
-
-    user_id = db.Column(
-        db.Integer,
-        db.ForeignKey('users.id', ondelete="cascade"),
-        primary_key=True
-    )
-    fish_id = db.Column(
-        db.Integer,
-        db.ForeignKey('fish.id', ondelete="cascade"),
-        primary_key=True
-    )
-
-class Caught(db.Model):
-    """Caught Fish."""
-
-    __tablename__ = "caught_fish"
+    __tablename__ = "users_fish"
 
     user_id = db.Column(
         db.Integer,
         db.ForeignKey('users.id', ondelete="cascade"),
-        primary_key=True
-    )
+        primary_key=True)
     fish_id = db.Column(
         db.Integer,
         db.ForeignKey('fish.id', ondelete="cascade"),
-        primary_key=True
-    )
+        primary_key=True)
+    is_caught = db.Column(db.Boolean,
+            nullable=False)

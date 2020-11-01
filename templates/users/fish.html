@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="container" id="all-fish-container">
+            <h4>All Fish</h4>
+            <p>All the fish in <em>ACNH</em></p>
+                <div id="all-fish-div">
+                    <div class="row" id="all-fish-grid">
+                        {% for f in all_fish|sort(attribute="id") %}
+                            <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light" style="max-width: 300px" data-id="fish-{{f.id}}">
+                                    <div class="card-header">{{f.name}}</div>
+                                    <img src="{{f.icon_url}}" class="card-img-top img-fluid">
+                                    <a href="/fish/{{ f.id }}" class="btn btn-primary">More info</a>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+    </div>
+    <script src="static/app.js"></script>
+{% endblock %}

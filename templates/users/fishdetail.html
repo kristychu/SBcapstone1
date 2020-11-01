@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+    <div class="container">
+        <div class="container" id="one-fish-container">
+            <h3>{{ fish.name }}</h3>
+            <img src="{{ fish.icon_url }}" alt="{{ fish.name }}">
+            <div><a href="/fish" class="btn btn-primary">Back</a></div>
+        </div>
+    </div>
+    <script src="static/app.js"></script>
+{% endblock %}
