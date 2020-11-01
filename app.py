@@ -33,7 +33,8 @@ def get_all_fish():
     for d in data:
         name = d['name']['name-USen']
         icon = d['icon_uri']
-        fish = {'name': name, 'icon_url': icon}
+        catchphrase = d['catch-phrase']
+        fish = {'name': name, 'icon_url': icon, 'catchphrase': catchphrase}
         all_fish.append(fish)
     return all_fish
 
@@ -44,7 +45,8 @@ def load_database():
     for fish in all_fish:
         name = fish['name']
         icon = fish['icon_url']
-        new_fish = Fish(name=name, icon_url=icon)
+        catchphrase = fish['catchphrase']
+        new_fish = Fish(name=name, icon_url=icon, catchphrase=catchphrase)
         db.session.add(new_fish)
         db.session.commit()
 
@@ -197,7 +199,7 @@ def toggle_is_caught(fish):
     if fish.is_caught == False:
         fish.is_caught = True
         db.session.commit()
-        flash(f"Great job! You caught {fish.fish.name}! Keep it up!", "success")
+        flash(f"{fish.fish.catchphrase}", "success")
 
     else:
         fish.is_caught = False
@@ -217,11 +219,11 @@ def show_all_fish():
     user = User.query.get_or_404(g.user.id)
     all_fish = User_Fish.query.filter(User_Fish.user_id==user.id).all()
     
-    return render_template('users/index-2.html', all_fish=all_fish, user=user)
+    return render_template('users/index.html', all_fish=all_fish, user=user)
 
 @app.route('/fish/<int:fish_id>')
 def show_one_fish(fish_id):
-    """Show details on one fish."""
+    """Show details on one of user's fish."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")

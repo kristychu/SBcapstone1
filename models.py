@@ -88,6 +88,8 @@ class Fish(db.Model):
     icon_url = db.Column(db.Text,
                 nullable=False,
                 unique=True)
+    catchphrase = db.Column(db.Text,
+                nullable=False)
     
     user_fish = db.relationship('User_Fish', backref='fish')
 

@@ -1,47 +1,23 @@
 {% extends 'base.html' %}
 {% block content %}
     <div class="container">
-      <h4>Track Fish</h4>
-      <p>Select the ones you already caught and then click Save!</p>
-      <a href="/save" method="POST" class="btn btn-large btn-success">Save</a>
+        <h3>Track Fish</h3>
+                <div class="container" id="fish-container">
+                    <div id="fish-div">
+                        <div class="row" id="fish-grid">
+                            {% for f in all_fish|sort(attribute="fish_id") %}
+                                <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light fishcard" style="max-width: 300px" data-fish-id="fish-{{f.fish_id}}">
+                                    <div class="card-header"><a href="/fish/{{ f.fish_id }}">{{f.fish.name}}</a></div>
+                                    <img src="{{f.fish.icon_url}}" class="card-img-top img-fluid">
+                                    {% if f.is_caught == false %}
+                                    <form action="/fish/{{ f.fish_id }}/edit" method="PUT" id="fish-caught-form"><button type="submit" class="btn btn-success">Caught!</button></form>
+                                    {% else %}
+                                    <form action="/fish/{{ f.fish_id }}/edit" method="PUT" id="fish-uncaught-form"><button class="btn btn-danger">Uncaught</button></form>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
     </div>
-    <p>
-      <div class="container">
-          <ul class="nav nav-tabs" id="myTabs" role="tablist">
-              <li class="nav-item">
-                  <a class="nav-link active" id="uncaughtFishContainer-tab" data-toggle="tab" href="#uncaught" role="tab" aria-controls="uncaught" aria-selected="true">Uncaught</a>
-              </li>
-              <li class="nav-item">
-                  <a class="nav-link" id="caughtFishContainer-tab" data-toggle="tab" href="#caught" role="tab" aria-controls="caught" aria-selected="true">Caught</a>
-              </li>
-          </ul>
-          <div class="tab-content" id="myTabsContent">
-              <div class="tab-pane fade show active" id="uncaughtFishContainer" role="tabpanel" aria-labelledby="uncaught-tab">
-                  <div id="uncaught-fish-div">
-                      <div class="row" id="uncaught-fish-grid">
-                          {% for f in all_fish %}
-                            <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light" style="max-width: 300px" data-id="fish-{{f.id}}">
-                                <input type="checkbox" class="custom-control-input" id="fish-{{f.id}}">
-                                <label class="custom-control-label" for="fish-{{f.id}}">
-                                    <div class="card-header">{{f.name}}</div>
-                                    <img src="{{f.icon_url}}" class="card-img-top img-fluid">
-                                </label>
-                            </div>
-                          {% endfor %}
-                      </div>
-                  </div>
-              </div>
-              <div class="container" id="caught-fish-container">
-                  <div class="tab-pane fade" id="caughtFishContainer" role="tabpanel" aria-labelledby="caught-tab">
-                      <div id="caught-fish-div">
-                          <div class="row" id="caught-fish-grid">
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-    </p>
-  
-    <script src="static/app.js"></script>
 {% endblock %}
