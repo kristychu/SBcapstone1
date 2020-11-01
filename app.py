@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, flash, jsonify, redirect, ses
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 import requests
+import os
 
 from models import db, connect_db, User, Fish, User_Fish
 from forms import UserAddForm, LoginForm
@@ -14,7 +15,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///acnhcreatures'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 
-app.config['SECRET_KEY'] = "SEEKRET!"
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'hellosecret1')
 
 connect_db(app)
 db.create_all()
