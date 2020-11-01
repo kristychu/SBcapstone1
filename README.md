@@ -1,6 +1,6 @@
 # ACNH Fish Tracker
 ## Description
-Animal Crossing: New Horizons (ACNH) is a Nintendo switch game where you can catch and discover different types of critters (Fish, Bugs, and Sea Creatures) and Fossils. ACNH Fish Tracker allows users to keep track of which fish they have already caught and which fish they still need to catch.
+Animal Crossing: New Horizons (ACNH) is a Nintendo switch game where you can catch and discover different types of critters (Fish, Bugs, and Sea Creatures) and Fossils. ACNH Fish Tracker allows users to keep track of which fish users have already caught and which fish users still need to catch.
 
 ## Features
 - Create a free user account
