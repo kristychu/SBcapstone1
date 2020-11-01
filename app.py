@@ -11,7 +11,7 @@ CURR_USER_KEY = "curr_user"
 API_BASE_URL = "https://acnhapi.com/v1a"
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///acnhcreatures'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'postgresql:///acnhcreatures')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 
