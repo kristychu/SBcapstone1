@@ -1,4 +1,4 @@
-from models import User, Fish, User_Fish
-from app import app
+from models import db
+from app import app, load_database
 
 load_database()
