@@ -7,7 +7,7 @@
 from unittest import TestCase
 
 from app import app, CURR_USER_KEY
-from models import db, connect_db, User, Fish, Uncaught, Caught
+from models import db, connect_db, User, Fish, User_Fish
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///test-acnh"
 app.config['SQLALCHEMY_ECHO'] = False
@@ -57,14 +57,12 @@ class UserViewTestCase(TestCase):
         db.session.add_all([f1, f2, f3, f4])
         db.session.commit()
     
-    def saved_user_fish(self):
-        caught_fish = Caught(user_id=self.testuser_id, fish_id=f1_id)
-        uncaught_fish = Uncaught(
-            user_id=self.testuser_id, fish_id=f2_id,
-            user_id=self.testuser_id, fish_id=f2_id,
-            user_id=self.testuser_id, fish_id=f2_id
-            )
-
+        uf778 = User_Fish(user_id=self.testuser_id, fish_id=f1.id, is_caught=False)
+        uf884 = User_Fish(user_id=self.testuser_id, fish_id=f2.id, is_caught=False)
+        uf1 = User_Fish(user_id=self.testuser_id, fish_id=f3.id, is_caught=False)
+        uf2 = User_Fish(user_id=self.testuser_id, fish_id=f4.id, is_caught=False)
+        db.session.add_all([uf778, uf884, uf1, uf2])
+        db.session.commit()
 
     def test_show_home(self):
         with self.client as c:
@@ -75,21 +73,16 @@ class UserViewTestCase(TestCase):
             self.assertEqual(resp.status_code, 200)
             self.assertIn("We currently only allow users to track fish.", str(resp.data))
     
-    def test_show_index(self):
+    def test_show_all_fish(self):
         self.load_fish()
 
         with self.client as c:
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.testuser_id
             
-            resp = c.get("/track")
+            resp = c.get('/fish')
             self.assertEqual(resp.status_code, 200)
 
-            #Should show all fish names and fish icon urls under "Uncaught Fish" section
-            #In order to know they are all in Uncaught section, the Caught section says "You haven't caught any yet!"
-            self.assertIn("<h4>Uncaught Fish</h4>", str(resp.data))
-            self.assertIn("<h4>Caught Fish</h4>", str(resp.data))
-            self.assertIn("You haven\\\'t caught any yet!", str(resp.data))
             self.assertIn("fish1", str(resp.data))
             self.assertIn("fish2", str(resp.data))
             self.assertIn("fish778", str(resp.data))
@@ -99,31 +92,29 @@ class UserViewTestCase(TestCase):
             self.assertIn("fish778iconurl.jpg", str(resp.data))
             self.assertIn("fish884iconurl.jpg", str(resp.data))
     
-    def test_save_caught_fish(self):
+    def test_show_one_fish(self):
         self.load_fish()
 
         with self.client as c:
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.testuser_id
         
-        caught_fish = ["1", "2"]
-        resp = c.post("/save/caught", data={"uncaughtfishcheckbox": caught_fish}, follow_redirects=True)
+        resp = c.get('/fish/1')
 
         self.assertEqual(resp.status_code, 200)
-        self.assertNotIn("You haven\\\'t caught any yet!", str(resp.data))
         self.assertIn("fish1", str(resp.data))
-        self.assertIn("fish2", str(resp.data))
-        self.assertIn("Great job! Keep it up!", str(resp.data))
+        self.assertNotIn("fish2", str(resp.data))
+        self.assertIn("fish1iconurl.jpg", str(resp.data))
+        self.assertNotIn("fish2iconurl.jpg", str(resp.data))
 
-    def test_move_uncaught_fish(self):
+    def test_edit_one_fish(self):
         self.load_fish()
 
         with self.client as c:
             with c.session_transaction() as sess:
                 sess[CURR_USER_KEY] = self.testuser_id
         
-        uncaught_fish = ["1"]
-        resp = c.post("/save/uncaught", data={"caughtfishcheckbox": uncaught_fish}, follow_redirects=True)
-
+        resp = c.put('/fish/1/edit', follow_redirects=True)
+        
         self.assertEqual(resp.status_code, 200)
-        self.assertIn("Oops! You'll catch 'em next time!", str(resp.data))
+        self.assertIn('<button class="btn btn-danger">Uncaught</button>', str(resp.data))

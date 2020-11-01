@@ -155,7 +155,7 @@ def logout():
 
 
 @app.route('/')
-def homepage():
+def show_home():
     """Show homepage."""
 
     if g.user:
@@ -221,7 +221,7 @@ def show_all_fish():
 
 @app.route('/fish/<int:fish_id>')
 def show_one_fish(fish_id):
-    """Show details on one of user's fish."""
+    """Show details on one fish."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")

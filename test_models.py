@@ -8,7 +8,7 @@ from unittest import TestCase
 from sqlalchemy import exc
 
 from app import app
-from models import db, User, Fish
+from models import db, User, Fish, User_Fish
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgresql:///test-acnh"
 app.config['SQLALCHEMY_ECHO'] = False
@@ -68,9 +68,8 @@ class UserModelTestCase(TestCase):
         db.session.add(u)
         db.session.commit()
 
-        # User should have no uncaught_fish & no caught_fish
-        self.assertEqual(len(u.uncaught_fish), 0)
-        self.assertEqual(len(u.caught_fish), 0)
+        # User should have 1 fish registered
+        self.assertEqual(len(u.fish), 0)
     
     ###### Signup Tests ######
     def test_valid_signup(self):
@@ -151,9 +150,8 @@ class FishModelTestCase(TestCase):
         db.session.add(f)
         db.session.commit()
 
-        # Fish should have no user_caught & no user_uncaught
-        self.assertEqual(len(f.user_caught), 0)
-        self.assertEqual(len(f.user_uncaught), 0)
+        # Fish should have 0 user_fish relationship
+        self.assertEqual(len(f.user_fish), 0)
     
     def test_duplicate_fish_iconurl(self):
         
@@ -163,7 +161,7 @@ class FishModelTestCase(TestCase):
         )
 
         f2 = Fish(
-            name='Fish2',
+            name='Fish1',
             icon_url="fish1iconurl.jpg"
         )
 
