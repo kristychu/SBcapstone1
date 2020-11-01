@@ -18,7 +18,6 @@ app.config['SQLALCHEMY_ECHO'] = True
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'hellosecret1')
 
 connect_db(app)
-db.create_all()
 
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 
