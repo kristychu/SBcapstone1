@@ -10,9 +10,9 @@
                                     <div class="card-header"><a href="/fish/{{ f.fish_id }}">{{f.fish.name}}</a></div>
                                     <img src="{{f.fish.icon_url}}" class="card-img-top img-fluid">
                                     {% if f.is_caught == false %}
-                                    <form action="/fish/{{ f.fish_id }}/edit" method="PUT" id="fish-caught-form"><button type="submit" class="btn btn-success">Caught!</button></form>
+                                    <form action="/fish/{{ f.fish_id }}" method="PUT" id="fish-caught-form"><button type="submit" class="btn btn-success">Caught!</button></form>
                                     {% else %}
-                                    <form action="/fish/{{ f.fish_id }}/edit" method="PUT" id="fish-uncaught-form"><button class="btn btn-danger">Uncaught</button></form>
+                                    <form action="/fish/{{ f.fish_id }}" method="PUT" id="fish-uncaught-form"><button class="btn btn-danger">Uncaught</button></form>
                                     {% endif %}
                                 </div>
                             {% endfor %}

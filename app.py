@@ -221,19 +221,19 @@ def show_all_fish():
     
     return render_template('users/index.html', all_fish=all_fish, user=user)
 
-@app.route('/fish/<int:fish_id>')
+@app.route('/fish/<int:fish_id>', methods=["GET"])
 def show_one_fish(fish_id):
     """Show details on one of user's fish."""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect("/")
-    
+
     fish = Fish.query.get_or_404(fish_id)
 
     return render_template('users/fishdetail.html', fish=fish)
 
-@app.route('/fish/<int:fish_id>/edit', methods=["GET", "PUT"])
+@app.route('/fish/<int:fish_id>', methods=["PUT"])
 def edit_fish(fish_id):
     """Update caught status of fish."""
 
