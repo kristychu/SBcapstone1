@@ -44,16 +44,21 @@ class UserViewTestCase(TestCase):
         self.testuser.id = self.testuser_id
 
         db.session.commit()
-    
+
+    def tearDown(self):
+        """Clean up fouled transactions."""
+
+        db.session.rollback()
+
     def load_fish(self):
-        f1 = Fish(name="fish778", icon_url="fish778iconurl.jpg")
+        f1 = Fish(name="fish778", icon_url="fish778iconurl.jpg", catchphrase="fish778catchphrase")
         f1_id = 778
         f1.id = f1_id
-        f2 = Fish(name="fish884", icon_url="fish884iconurl.jpg")
+        f2 = Fish(name="fish884", icon_url="fish884iconurl.jpg", catchphrase="fish884catchphrase")
         f2_id = 884
         f2.id = f2_id
-        f3 = Fish(name="fish1", icon_url="fish1iconurl.jpg")
-        f4 = Fish(name="fish2", icon_url="fish2iconurl.jpg")
+        f3 = Fish(name="fish1", icon_url="fish1iconurl.jpg", catchphrase="fish1catchphrase")
+        f4 = Fish(name="fish2", icon_url="fish2iconurl.jpg", catchphrase="fish2catchphrase")
         db.session.add_all([f1, f2, f3, f4])
         db.session.commit()
     
@@ -64,6 +69,11 @@ class UserViewTestCase(TestCase):
         db.session.add_all([uf778, uf884, uf1, uf2])
         db.session.commit()
 
+        self.f1 = f1
+        self.f2 = f2
+        self.f3 = f3
+        self.f4 = f4
+    
     def test_show_home(self):
         with self.client as c:
             with c.session_transaction() as sess:
@@ -107,14 +117,40 @@ class UserViewTestCase(TestCase):
         self.assertIn("fish1iconurl.jpg", str(resp.data))
         self.assertNotIn("fish2iconurl.jpg", str(resp.data))
 
-    def test_edit_one_fish(self):
+    def test_show_one_fish_json(self):
+        self.load_fish()
+
+        with self.client as c:
+            url = f"/api/fish/{self.f1.id}"
+            resp = c.get(url)
+
+            self.assertEqual(resp.status_code, 200)
+            data = resp.json
+            self.assertEqual(data, {
+                "fish": {
+                    "id": self.f1.id,
+                    "name": "fish778",
+                    "icon_url": "fish778iconurl.jpg",
+                    "catchphrase": "fish778catchphrase"
+                }
+            })
+    
+    def test_edit_fish_json(self):
         self.load_fish()
 
         with self.client as c:
             with c.session_transaction() as sess:
-                sess[CURR_USER_KEY] = self.testuser_id
-        
-        resp = c.put('/fish/1/edit', follow_redirects=True)
-        
+                sess[CURR_USER_KEY] = self.testuser_id  
+
+        url = f"/api/users/{self.testuser_id}/fish/778"
+        resp = c.patch(url)
+
         self.assertEqual(resp.status_code, 200)
-        self.assertIn('<button class="btn btn-danger">Uncaught</button>', str(resp.data))
+        data = resp.json
+        self.assertEqual(data, {
+            "fish": {
+                "user_id": self.testuser_id,
+                "fish_id": 778,
+                "is_caught": True
+            }
+        })

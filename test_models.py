@@ -128,7 +128,7 @@ class FishModelTestCase(TestCase):
         Fish.query.delete()
         db.session.commit()
 
-        fish = Fish(name='TestFish', icon_url="testiconurl.jpg")
+        fish = Fish(name='TestFish', icon_url="testiconurl.jpg", catchphrase="fish catchphrase!")
         db.session.add(fish)
         db.session.commit()
 
@@ -144,7 +144,8 @@ class FishModelTestCase(TestCase):
 
         f = Fish(
             name='Fish1',
-            icon_url="fish1iconurl.jpg"
+            icon_url="fish1iconurl.jpg",
+            catchphrase="fish1catchphrase"
         )
 
         db.session.add(f)
@@ -157,12 +158,14 @@ class FishModelTestCase(TestCase):
         
         f1 = Fish(
             name='Fish1',
-            icon_url="fish1iconurl.jpg"
+            icon_url="fish1iconurl.jpg",
+            catchphrase="fish1catchphrase"
         )
 
         f2 = Fish(
             name='Fish1',
-            icon_url="fish1iconurl.jpg"
+            icon_url="fish1iconurl.jpg",
+            catchphrase="fish1catchphrase"
         )
 
         db.session.add_all([f1, f2])
