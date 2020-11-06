@@ -95,6 +95,14 @@ class Fish(db.Model):
 
     def __repr__(self):
         return f"<Fish {self.name} {self.icon_url} >"
+    
+    def serialize(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'icon_url': self.icon_url,
+            'catchphrase': self.catchphrase
+        }
 
 class User_Fish(db.Model):
     """User_Fish relationship."""
@@ -111,3 +119,10 @@ class User_Fish(db.Model):
         primary_key=True)
     is_caught = db.Column(db.Boolean,
             nullable=False)
+    
+    def serialize(self):
+        return {
+            'user_id': self.user_id,
+            'fish_id': self.fish_id,
+            'is_caught': self.is_caught
+        }
