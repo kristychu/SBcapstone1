@@ -257,7 +257,7 @@ def show_all_fish():
     
     return render_template('users/index.html', all_fish=all_fish, user=user)
 
-@app.route('/fish/<int:fish_id>', methods=["GET"])
+@app.route('/fish/<int:fish_id>')
 def show_one_fish(fish_id):
     """Show details on one of user's fish."""
 
