@@ -188,9 +188,9 @@ def create_user_uncaught_fish():
         db.session.commit()
 
 def json_all_fish():
-    """Make API call and 
-    return JSON {'name': name, 'icon_url': icon_url, 'catchphrase': catchphrase }"""
-    all_fish = get_all_fish()
+    """Make API call. 
+    Return JSON {'name': name, 'icon_url': icon_url, 'catchphrase': catchphrase }"""
+    all_fish = Fish.query.all()
     response_json = jsonify(fish=all_fish)
     return (response_json, 201)
 
@@ -198,7 +198,7 @@ def json_all_fish():
 # API Fish routes:
 @app.route('/api/fish')
 def show_all_fish_json():
-    """Get info for all fish from the API.
+    """Get name, icon_url, and catchphrase info for all fish from the API.
     Return JSON {fish: 'name': name, 'icon_url': icon_url, 'catchphrase': catchphrase }."""
     return json_all_fish()
 
