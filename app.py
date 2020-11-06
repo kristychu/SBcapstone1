@@ -24,7 +24,7 @@ app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
 ##############################################################################
-########## API Calls ##########
+########## API Call ##########
 def get_all_fish():
     """Make API call for all fish."""
     response = requests.get(f'{API_BASE_URL}/fish')
@@ -49,14 +49,6 @@ def load_database():
         new_fish = Fish(name=name, icon_url=icon, catchphrase=catchphrase)
         db.session.add(new_fish)
         db.session.commit()
-
-########## Return JSON ##########
-def json_all_fish():
-    """Make API call and 
-    return JSON { 'id': id, 'name': name, 'icon_url': icon_url }"""
-    all_fish = get_all_fish()
-    response_json = jsonify(fish=all_fish)
-    return (response_json, 201)
 
 ##############################################################################
 # User register/login/logout
@@ -195,18 +187,62 @@ def create_user_uncaught_fish():
         db.session.add(uncaught_fish)
         db.session.commit()
 
-def toggle_is_caught(fish):
+def json_all_fish():
+    """Make API call and 
+    return JSON {'name': name, 'icon_url': icon_url, 'catchphrase': catchphrase }"""
+    all_fish = get_all_fish()
+    response_json = jsonify(fish=all_fish)
+    return (response_json, 201)
+
+##############################################################################
+# API Fish routes:
+@app.route('/api/fish')
+def show_all_fish_json():
+    """Get info for all fish from the API.
+    Return JSON {fish: 'name': name, 'icon_url': icon_url, 'catchphrase': catchphrase }."""
+    return json_all_fish()
+
+@app.route('/api/fish/<int:fish_id>')
+def show_one_fish_json(fish_id):
+    """Get more info for one fish in the database.
+    Return JSON {'name': name, 'icon_url': icon_url, 'catchphrase': catchphrase }."""
+    fish = Fish.query.get_or_404(fish_id)
+    return jsonify(fish=fish.serialize())
+
+@app.route('/api/users/<int:user_id>/fish')
+def get_user_fish_json(user_id):
+    """Get all fish belonging to a specific user.
+    Return JSON {'name': name, 'icon_url': icon_url, 'catchphrase': catchphrase }."""
+    if g.user.id != user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+    
+    all_fish = [fish.serialize() for fish in User_Fish.query.filter_by(user_id=user_id).all()]
+
+    return jsonify(fish=all_fish)
+
+@app.route('/api/users/<int:user_id>/fish/<int:fish_id>', methods=["PATCH"])
+def edit_fish_json(user_id, fish_id):
+    """Toggle fish is_caught property for one fish belonging to a specific user.
+    Return JSON {'name': name, 'icon_url': icon_url, 'catchphrase': catchphrase }."""
+    fish = User_Fish.query.filter(User_Fish.user_id==user_id, User_Fish.fish_id==fish_id).first()
+    
+    if g.user.id != user_id:
+        flash("Access unauthorized.", "danger")
+        return redirect("/")
+
     if fish.is_caught == False:
         fish.is_caught = True
         db.session.commit()
-        flash(f"{fish.fish.catchphrase}", "success")
 
     else:
         fish.is_caught = False
         db.session.commit()
-        flash(f"Oops! You'll catch 'em next time!", "warning")
+
+    return jsonify(fish=fish.serialize())
+
 ##############################################################################
-# Fish routes:
+# User_Fish views/routes:
 
 @app.route('/fish')
 def show_all_fish():
@@ -232,16 +268,3 @@ def show_one_fish(fish_id):
     fish = Fish.query.get_or_404(fish_id)
 
     return render_template('users/fishdetail.html', fish=fish)
-
-@app.route('/fish/<int:fish_id>', methods=["PUT"])
-def edit_fish(fish_id):
-    """Update caught status of fish."""
-
-    if not g.user:
-        flash("Access unauthorized.", "danger")
-        return redirect("/")
-    
-    fish = User_Fish.query.filter(User_Fish.user_id==g.user.id, User_Fish.fish_id==fish_id).first()
-    toggle_is_caught(fish)
-
-    return redirect('/fish')
