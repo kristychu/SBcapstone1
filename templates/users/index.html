@@ -6,18 +6,22 @@
                     <div id="fish-div">
                         <div class="row" id="fish-grid">
                             {% for f in all_fish|sort(attribute="fish_id") %}
-                                <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light fishcard" style="max-width: 300px" data-fish-id="fish-{{f.fish_id}}">
+                                <div class="card col-2 p5 custom-control custom-checkbox image-checkbox bg-light" id="fishcard-{{f.fish_id}}" style="max-width: 300px"
+                                data-fish-id="fish-{{f.fish_id}}" data-user-id="{{f.user_id}}">
                                     <div class="card-header"><a href="/fish/{{ f.fish_id }}">{{f.fish.name}}</a></div>
                                     <img src="{{f.fish.icon_url}}" class="card-img-top img-fluid">
-                                    {% if f.is_caught == false %}
-                                    <form action="/fish/{{ f.fish_id }}" method="PUT" id="fish-caught-form"><button type="submit" class="btn btn-success">Caught!</button></form>
+                                    {% if f.is_caught == true %}
+                                    <a href="/fish/{{ f.fish_id }}" class="btn btn-danger fish-uncaught-btn">Uncaught</a>
                                     {% else %}
-                                    <form action="/fish/{{ f.fish_id }}" method="PUT" id="fish-uncaught-form"><button class="btn btn-danger">Uncaught</button></form>
+                                    <a href="/fish/{{ f.fish_id }}" class="btn btn-success fish-caught-btn">Caught!</a>
                                     {% endif %}
+                                    
                                 </div>
                             {% endfor %}
                         </div>
                     </div>
                 </div>
     </div>
+    <script src="https://unpkg.com/axios/dist/axios.js"></script>
+    <script src="/static/app.js"></script>
 {% endblock %}
