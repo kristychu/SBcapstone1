@@ -6,8 +6,8 @@ Animal Crossing: New Horizons (ACNH) is a Nintendo switch game where you can cat
 - Create a free user account
 - See all fish available to catch in the game
 - See one fish at a time (This only shows the name and the image, but will eventually add more info (See Future Features))
-- See a fish's catchphrase when you save it as "Caught"
 - Save fish as Caught or Uncaught
+- See a fish's catchphrase when you save it as "Caught"
 - Future Features:
 	- Show additional information on each fish (seasonality, price, etc.)
 	- Filter the fish by name, seasonality, price
@@ -27,6 +27,7 @@ ACNH Fish Tracker uses:
 - Python
 - HTML
 - Bootstrap
+- JavaScript
 - jQuery
 - Flask
 - PostgreSQL
