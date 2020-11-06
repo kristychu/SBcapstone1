@@ -17,6 +17,18 @@ body.error-404 {
   cursor: pointer;
 }
 
+#message-container {
+  position: fixed;
+  top: 0;
+  padding: 40px;
+  z-index: 99999;
+  width: 100%;
+  left: 0;
+}
+
+.alert {
+  box-shadow: 0px 7px 39px 14px rgba(255,255,255,0.55);
+}
 /* ========================== Signup/Login */
 
 #user_form input.form-control {
